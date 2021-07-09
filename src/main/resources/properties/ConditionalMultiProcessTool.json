@@ -1,0 +1,180 @@
+[
+    {
+    "title" : "@@app.conditionalMultiProcessTool.config@@",
+    "properties" : [
+            {
+                "name" : "toolNumber",
+                "label" : "@@app.conditionalMultiProcessTool.toolNumber@@",
+                "type" : "SelectBox",
+                "options" : [
+                    {
+                     "value" : "1", 
+                     "label" : "1"
+                    },
+                    {
+                     "value" : "2", 
+                     "label" : "2"
+                    },
+                    {
+                     "value" : "3", 
+                     "label" : "3"
+                    },
+                    {
+                     "value" : "4", 
+                     "label" : "4"
+                    },
+                    {
+                     "value" : "5", 
+                     "label" : "5"
+                    }
+                ],
+                "required" : "True"
+            },
+            {
+                "name":"multithread",
+                "label":"@@app.conditionalMultiProcessTool.multithread@@",
+                "type":"checkbox",
+                "value":"false",
+                "options":[
+                    {
+                        "value":"true",
+                        "label":""
+                    }
+                ]
+            },
+            {
+                "name" : "debug",
+                "label" : "@@app.jsontool.debugMode@@",
+                "type" : "selectbox",
+                "options" : [{
+                    "value" : "false",
+                    "label" : "False"
+                },{
+                    "value" : "true",
+                    "label" : "True"
+                }]
+            }
+        ]
+    },{
+    "title" : "@@app.conditionalMultiProcessTool.firstProcessTool@@",
+    "properties" : [
+            {
+                "name" : "firstCondition",
+                "label" : "@@app.conditionalMultiProcessTool.condition@@",
+                "type" : "codeeditor",
+                "cols" : "30",
+                "rows" : "3",
+                "description" : "@@app.conditionalMultiProcessTool.condition.desc@@",
+                "required" : "True"
+            },
+            {
+                "name":   "firstConditionProcessTool",
+                "label":"@@app.conditionalMultiProcessTool.tool@@",
+                "type":"elementselect",
+                "options_ajax":"[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.plugin.base.ApplicationPlugin",
+                "url":"[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions",
+                "default_property_values_url": "[CONTEXT_PATH]/web/property/json[APP_PATH]/getDefaultProperties"
+            }
+        ]
+    },
+    {
+    "title" : "@@app.conditionalMultiProcessTool.secondProcessTool@@",
+    "properties" : [
+            {
+                "name" : "secondCondition",
+                "label" : "@@app.conditionalMultiProcessTool.condition@@",
+                "type" : "codeeditor",
+                "cols" : "30",
+                "rows" : "3",
+                "description" : "@@app.conditionalMultiProcessTool.condition.desc@@",
+                "required" : "True"
+            },
+            {
+                "name":   "secondConditionProcessTool",
+                "label":"@@app.conditionalMultiProcessTool.tool@@",
+                "type":"elementselect",
+                "options_ajax":"[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.plugin.base.ApplicationPlugin",
+                "url":"[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions",
+                "default_property_values_url": "[CONTEXT_PATH]/web/property/json[APP_PATH]/getDefaultProperties"
+            }
+        ],
+        "control_field": "toolNumber",
+        "control_value": "2|3|4|5",
+        "control_use_regex": "true"
+    },
+    {
+    "title" : "@@app.conditionalMultiProcessTool.thirdProcessTool@@",
+    "properties" : [
+            {
+                "name" : "thirdCondition",
+                "label" : "@@app.conditionalMultiProcessTool.condition@@",
+                "type" : "codeeditor",
+                "cols" : "30",
+                "rows" : "3",
+                "description" : "@@app.conditionalMultiProcessTool.condition.desc@@",
+                "required" : "True"
+            },
+            {
+                "name":   "thirdConditionProcessTool",
+                "label":"@@app.conditionalMultiProcessTool.tool@@",
+                "type":"elementselect",
+                "options_ajax":"[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.plugin.base.ApplicationPlugin",
+                "url":"[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions",
+                "default_property_values_url": "[CONTEXT_PATH]/web/property/json[APP_PATH]/getDefaultProperties"
+            }
+        ],
+        "control_field": "toolNumber",
+        "control_value": "3|4|5",
+        "control_use_regex": "true"
+    },
+    {
+    "title" : "@@app.conditionalMultiProcessTool.fourthProcessTool@@",
+    "properties" : [
+            {
+                "name" : "fourthCondition",
+                "label" : "@@app.conditionalMultiProcessTool.condition@@",
+                "type" : "codeeditor",
+                "cols" : "30",
+                "rows" : "3",
+                "description" : "@@app.conditionalMultiProcessTool.condition.desc@@",
+                "required" : "True"
+            },
+            {
+                "name":   "fourthConditionProcessTool",
+                "label":"@@app.conditionalMultiProcessTool.tool@@",
+                "type":"elementselect",
+                "options_ajax":"[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.plugin.base.ApplicationPlugin",
+                "url":"[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions",
+                "default_property_values_url": "[CONTEXT_PATH]/web/property/json[APP_PATH]/getDefaultProperties"
+            }
+        ],
+                "control_field": "toolNumber",
+                "control_value": "4|5",
+                "control_use_regex": "true"
+    },
+    {
+    "title" : "@@app.conditionalMultiProcessTool.fifthProcessTool@@",
+    "properties" : [
+            {
+                "name" : "fifthCondition",
+                "label" : "@@app.conditionalMultiProcessTool.condition@@",
+                "type" : "codeeditor",
+                "cols" : "30",
+                "rows" : "3",
+                "description" : "@@app.conditionalMultiProcessTool.condition.desc@@",
+                "required" : "True"
+            },
+            {
+                "name":   "fifthConditionProcessTool",
+                "label":"@@app.conditionalMultiProcessTool.tool@@",
+                "type":"elementselect",
+                "options_ajax":"[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.plugin.base.ApplicationPlugin",
+                "url":"[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions",
+                "default_property_values_url": "[CONTEXT_PATH]/web/property/json[APP_PATH]/getDefaultProperties"
+            }
+        ],
+        "control_field": "toolNumber",
+        "control_value": "[5]",
+        "control_use_regex": "true"
+    }
+]
