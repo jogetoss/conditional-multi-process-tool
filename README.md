@@ -1,6 +1,6 @@
 # Description
 
-This repository is meant to serve as a general template for how to set up new repositories in the JogetOSS organization. 
+This unique process tool plugin allows a maximum of 5 process tool plugins to be executed when their respective conditions are met, either sequentially or in a multi-threaded manner. See [documentation](https://dev.joget.org/community/display/marketplace/Conditional+Multi+Process+Tool+Plugin).
 
 # Getting Help
 
