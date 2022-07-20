@@ -1,6 +1,10 @@
 # Description
 
-This unique process tool plugin allows a maximum of 5 process tool plugins to be executed when their respective conditions are met, either sequentially or in a multi-threaded manner. See [documentation](https://dev.joget.org/community/display/marketplace/Conditional+Multi+Process+Tool+Plugin).
+![diagram](https://user-images.githubusercontent.com/70784722/179912265-c328e997-b5c9-42ec-ae36-85bf3d5e957d.png)
+
+This process tool wrapper plugin executes process tool based on condition.
+
+There are 2 plugins. One support single set of condition and process tool plugin. The second one allows configuration up to 5 process tool plugins to be executed when their respective conditions are met, either sequentially or in a multi-threaded manner. See [documentation](https://dev.joget.org/community/display/marketplace/Conditional+Multi+Process+Tool+Plugin).
 
 # Getting Help
 
