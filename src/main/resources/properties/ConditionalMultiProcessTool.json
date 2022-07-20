@@ -31,27 +31,19 @@
                 "required" : "True"
             },
             {
-                "name":"multithread",
-                "label":"@@app.conditionalMultiProcessTool.multithread@@",
-                "type":"checkbox",
-                "value":"false",
-                "options":[
-                    {
-                        "value":"true",
-                        "label":""
-                    }
-                ]
+                "name" : "delay",
+                "label" : "@@app.conditionalMultiProcessTool.delayBetweenExecution@@",
+                "description" : "@@app.conditionalMultiProcessTool.delayBetweenExecution.desc@@",
+                "type" : "textfield",
+                "value" : "0"
             },
             {
                 "name" : "debug",
                 "label" : "@@app.jsontool.debugMode@@",
-                "type" : "selectbox",
+                "type" : "checkbox",
                 "options" : [{
-                    "value" : "false",
-                    "label" : "False"
-                },{
                     "value" : "true",
-                    "label" : "True"
+                    "label" : ""
                 }]
             }
         ]

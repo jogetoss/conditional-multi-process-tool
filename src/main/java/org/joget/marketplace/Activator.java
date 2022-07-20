@@ -6,6 +6,7 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.joget.marketplace.app.ConditionalMultiProcessTool;
+import org.joget.marketplace.app.ConditionalProcessTool;
 
 public class Activator implements BundleActivator {
 
@@ -16,6 +17,7 @@ public class Activator implements BundleActivator {
 
         //Register plugin here
         registrationList.add(context.registerService(ConditionalMultiProcessTool.class.getName(), new ConditionalMultiProcessTool(), null));
+        registrationList.add(context.registerService(ConditionalProcessTool.class.getName(), new ConditionalProcessTool(), null));
     }
 
     public void stop(BundleContext context) {

@@ -14,7 +14,6 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
-import org.joget.commons.util.PluginThread;
 import org.joget.plugin.base.ApplicationPlugin;
 import org.joget.plugin.base.DefaultApplicationPlugin;
 import org.joget.plugin.base.Plugin;
@@ -32,7 +31,7 @@ public class ConditionalMultiProcessTool extends DefaultApplicationPlugin{
 
     @Override
     public String getVersion() {
-        return "6.0.1";
+        return "7.0.2";
     }
 
     @Override
@@ -61,207 +60,105 @@ public class ConditionalMultiProcessTool extends DefaultApplicationPlugin{
     }
 
     @Override
-    public Object execute(final Map properties) {
-        final AppDefinition appDef = AppUtil.getCurrentAppDefinition();
-        final String[] conditionList = new String[]{"firstCondition","secondCondition","thirdCondition","fourthCondition","fifthCondition"};
-        final boolean debugMode = Boolean.parseBoolean((String)properties.get("debug"));
+    public Object execute(Map properties) {
+        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+        String[] conditionList = new String[]{"firstCondition","secondCondition","thirdCondition","fourthCondition","fifthCondition"};
+        boolean debugMode = Boolean.parseBoolean((String)properties.get("debug"));
         
-        final PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
-        final WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
-        final String currentUser = workflowUserManager.getCurrentUsername();
-        
-        String multithread = (String)properties.get("multithread");
-        Thread newThread;
-        Collection<Thread> threads = new ArrayList<Thread>();
+        PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+        WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+        String currentUser = workflowUserManager.getCurrentUsername();
         
         if(debugMode){
             LogUtil.info(getClass().getName(), "Executing Conditional Multi Process Tool");
         }
         
-        try{
-            if(multithread.equalsIgnoreCase("true")){
-                //multithread
-                if(debugMode){
-                    LogUtil.info(getClass().getName(), "Parallel Execution Mode");
-                }
-                //int delay = Integer.parseInt(properties.get("delay").toString());
+        String delayString = (String)properties.get("delay");
+
+        int delayInt = 0;
+        if(delayString == null){
+            delayString = "0";
+        }
+        if(delayString.equalsIgnoreCase("true")){
+            delayInt = 1;
+        }else if(delayString.equalsIgnoreCase("false")){
+            delayInt = 0;
+        }else{
+            delayInt = Integer.parseInt(delayString);
+        }
+
+        int delay = delayInt;
                 
-                for (String cond : conditionList) {
-                    String condition = (String)properties.get(cond);
+        for (String cond : conditionList) {
+            try{
+                String condition = (String)properties.get(cond);
 
-                    ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
-                    ScriptContext context = engine.getContext();
-                    StringWriter writer = new StringWriter();
-                    context.setWriter(writer);
+                ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
+                ScriptContext context = engine.getContext();
+                StringWriter writer = new StringWriter();
+                context.setWriter(writer);
 
-                    if(debugMode){
-                        LogUtil.info(getClass().getName(), "Evaluating " + cond + " : " + condition);
-                    }
+                if(debugMode){
+                    LogUtil.info(getClass().getName(), "Evaluating " + cond + " : " + condition);
+                }
 
-                    engine.eval("print(" + condition + ")");
+                engine.eval("print(" + condition + ")");
 
-                    String output = writer.toString();
-                    output = output.trim();
+                String output = writer.toString();
+                output = output.trim();
 
-                    if(debugMode){
-                        LogUtil.info(getClass().getName(), "Result " + cond + " : " + output);
-                    }
+                if(debugMode){
+                    LogUtil.info(getClass().getName(), "Result " + cond + " : " + output);
+                }
 
-                    if("true".equalsIgnoreCase((String)output)){
-                        //executes the process tool plugin
-                        final String processToolPropertyName = cond + "ProcessTool";
+                if("true".equalsIgnoreCase((String)output)){
+                    //executes the process tool plugin
+                    String processToolPropertyName = cond + "ProcessTool";
+                    Object objProcessTool = properties.get(processToolPropertyName);
+                    if (objProcessTool != null && objProcessTool instanceof Map) {
+                        Map fvMap = (Map) objProcessTool;
+                        if (fvMap != null && fvMap.containsKey("className") && !fvMap.get("className").toString().isEmpty()) {
+                            String className = fvMap.get("className").toString();
+                            ApplicationPlugin p = (ApplicationPlugin)pluginManager.getPlugin(className);
 
-                        newThread = new PluginThread(new Runnable() {
-                            public void run() {
-                                workflowUserManager.setCurrentThreadUser(currentUser);
+                            Map propertiesMap = new HashMap(properties);
+                            propertiesMap.putAll(AppPluginUtil.getDefaultProperties((Plugin) p, (Map) fvMap.get("properties"), (AppDefinition) properties.get("appDef"), (WorkflowAssignment) properties.get("workflowAssignment")));
+                            ApplicationPlugin appPlugin = (ApplicationPlugin) p;
 
-                                Object objProcessTool = properties.get(processToolPropertyName);
-                                if (objProcessTool != null && objProcessTool instanceof Map) {
-                                    Map fvMap = (Map) objProcessTool;
-                                    if (fvMap != null && fvMap.containsKey("className") && !fvMap.get("className").toString().isEmpty()) {
-                                        String className = fvMap.get("className").toString();
-                                        ApplicationPlugin p = (ApplicationPlugin)pluginManager.getPlugin(className);
-
-                                        Map propertiesMap = new HashMap(properties);//(Map)fvMap.get("properties");
-                                        propertiesMap.putAll(AppPluginUtil.getDefaultProperties((Plugin) p, (Map) fvMap.get("properties"), (AppDefinition) properties.get("appDef"), (WorkflowAssignment) properties.get("workflowAssignment")));
-                                        ApplicationPlugin appPlugin = (ApplicationPlugin) p;
-
-                                        if (appPlugin instanceof PropertyEditable) {
-                                            ((PropertyEditable) appPlugin).setProperties(propertiesMap);
-                                        }
-
-                                        if(debugMode){
-                                            LogUtil.info(getClass().getName(), "Executing tool: " + processToolPropertyName + " - " + className);
-                                        }
-                                        
-                                        AppUtil.setCurrentAppDefinition(appDef);
-                                        Object result = appPlugin.execute(propertiesMap);
-
-                                        if(debugMode){
-                                            if(result != null){
-                                                LogUtil.info(getClass().getName(), "Executed tool: " + processToolPropertyName + " - " + className + " - " + result.toString());
-                                            }else{
-                                                LogUtil.info(getClass().getName(), "Executed tool: " + processToolPropertyName + " - " + className);
-                                            }
-                                        }
-                                    }
-                                }
+                            if (appPlugin instanceof PropertyEditable) {
+                                ((PropertyEditable) appPlugin).setProperties(propertiesMap);
                             }
-                        });
-                        newThread.start();
-                        threads.add(newThread);
-                        
-                        /*
-                                    ,
-                        {
-                            "name" : "delay",
-                            "label" : "@@app.conditionalMultiProcessTool.delay@@",
-                            "type" : "textfield",
-                            "value" : "1",
-                            "required" : "True",
-                            "control_field": "multithread",
-                            "control_value": "true",
-                            "control_use_regex": "false"
-                        },*/
-                        
-//                        //delay in starting new thread
-//                        if(delay > 0){
-//                            try {
-//                                Thread.sleep(delay * 1000);
-//                            } catch (InterruptedException ex) {
-//                                Logger.getLogger(ConditionalMultiProcessTool.class.getName()).log(Level.SEVERE, null, ex);
-//                            }
-//                        }
-                    }
-                }
-            }else{
-                //single thread
-                if(debugMode){
-                    LogUtil.info(getClass().getName(), "Single Thread Execution Mode");
-                }
-                
-                newThread = new PluginThread(new Runnable() {
-                    public void run() {
-                        workflowUserManager.setCurrentThreadUser(currentUser);
-                        
-                        for (String cond : conditionList) {
-                            try{
-                                String condition = (String)properties.get(cond);
 
-                                ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
-                                ScriptContext context = engine.getContext();
-                                StringWriter writer = new StringWriter();
-                                context.setWriter(writer);
+                            if(debugMode){
+                                LogUtil.info(getClass().getName(), "Executing tool: " + processToolPropertyName + " - " + className);
+                            }
 
-                                if(debugMode){
-                                    LogUtil.info(getClass().getName(), "Evaluating " + cond + " : " + condition);
+                            AppUtil.setCurrentAppDefinition(appDef);
+                            Object result = appPlugin.execute(propertiesMap);
+
+                            if(debugMode){
+                                if(result != null){
+                                    LogUtil.info(getClass().getName(), "Executed tool: " + processToolPropertyName + " - " + className + " - " + result.toString());
+                                }else{
+                                    LogUtil.info(getClass().getName(), "Executed tool: " + processToolPropertyName + " - " + className);
                                 }
-
-                                engine.eval("print(" + condition + ")");
-
-                                String output = writer.toString();
-                                output = output.trim();
-
-                                if(debugMode){
-                                    LogUtil.info(getClass().getName(), "Result " + cond + " : " + output);
-                                }
-
-                                if("true".equalsIgnoreCase((String)output)){
-                                    //executes the process tool plugin
-                                    String processToolPropertyName = cond + "ProcessTool";
-                                    Object objProcessTool = properties.get(processToolPropertyName);
-                                    if (objProcessTool != null && objProcessTool instanceof Map) {
-                                        Map fvMap = (Map) objProcessTool;
-                                        if (fvMap != null && fvMap.containsKey("className") && !fvMap.get("className").toString().isEmpty()) {
-                                            String className = fvMap.get("className").toString();
-                                            ApplicationPlugin p = (ApplicationPlugin)pluginManager.getPlugin(className);
-
-                                            Map propertiesMap = new HashMap(properties);//(Map)fvMap.get("properties");
-                                            propertiesMap.putAll(AppPluginUtil.getDefaultProperties((Plugin) p, (Map) fvMap.get("properties"), (AppDefinition) properties.get("appDef"), (WorkflowAssignment) properties.get("workflowAssignment")));
-                                            ApplicationPlugin appPlugin = (ApplicationPlugin) p;
-
-                                            if (appPlugin instanceof PropertyEditable) {
-                                                ((PropertyEditable) appPlugin).setProperties(propertiesMap);
-                                            }
-
-                                            if(debugMode){
-                                                LogUtil.info(getClass().getName(), "Executing tool: " + processToolPropertyName + " - " + className);
-                                            }
-                                            
-                                            AppUtil.setCurrentAppDefinition(appDef);
-                                            Object result = appPlugin.execute(propertiesMap);
-                                            
-                                            if(debugMode){
-                                                if(result != null){
-                                                    LogUtil.info(getClass().getName(), "Executed tool: " + processToolPropertyName + " - " + className + " - " + result.toString());
-                                                }else{
-                                                    LogUtil.info(getClass().getName(), "Executed tool: " + processToolPropertyName + " - " + className);
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }catch(Exception ex){
-                                Logger.getLogger(ConditionalMultiProcessTool.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
                     }
-                });
-                newThread.start();
-                threads.add(newThread);
+                }
+            }catch(Exception ex){
+                Logger.getLogger(ConditionalMultiProcessTool.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
-            //wait for all threads to finish
-            for(Thread thread : threads){
+
+            if(delay > 0){
                 try {
-                    thread.join();
+                    Thread.sleep(delay * 1000);
                 } catch (InterruptedException ex) {
-                    LogUtil.error(getClassName(), ex, "");
+                    Logger.getLogger(ConditionalMultiProcessTool.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        }catch(Exception ex){
-            Logger.getLogger(ConditionalMultiProcessTool.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         return null;
     }
     
