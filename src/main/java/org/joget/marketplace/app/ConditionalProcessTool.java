@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppPluginUtil;
@@ -28,7 +29,7 @@ public class ConditionalProcessTool extends DefaultApplicationPlugin{
 
     @Override
     public String getVersion() {
-        return "7.0.2";
+        return "7.0.3";
     }
 
     @Override
@@ -86,7 +87,10 @@ public class ConditionalProcessTool extends DefaultApplicationPlugin{
         try{
             String condition = (String)properties.get("condition");
 
-            ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
+            ScriptEngineFactory sef = new org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory(); 
+            ScriptEngine engine = sef.getScriptEngine();
+
+            //ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
             ScriptContext context = engine.getContext();
             StringWriter writer = new StringWriter();
             context.setWriter(writer);
