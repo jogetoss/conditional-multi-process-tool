@@ -35,7 +35,8 @@
                 "label" : "@@app.conditionalMultiProcessTool.delayBetweenExecution@@",
                 "description" : "@@app.conditionalMultiProcessTool.delayBetweenExecution.desc@@",
                 "type" : "textfield",
-                "value" : "0"
+                "value" : "0",
+                "required" : "True"
             },
             {
                 "name" : "debug",
