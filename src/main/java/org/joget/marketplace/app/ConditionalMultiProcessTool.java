@@ -1,15 +1,13 @@
 package org.joget.marketplace.app;
 
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
+import javax.script.ScriptEngineFactory;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppUtil;
@@ -31,7 +29,7 @@ public class ConditionalMultiProcessTool extends DefaultApplicationPlugin{
 
     @Override
     public String getVersion() {
-        return "7.0.3";
+        return "7.0.4";
     }
 
     @Override
@@ -93,7 +91,10 @@ public class ConditionalMultiProcessTool extends DefaultApplicationPlugin{
             try{
                 String condition = (String)properties.get(cond);
 
-                ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
+                ScriptEngineFactory sef = new org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory(); 
+                ScriptEngine engine = sef.getScriptEngine();
+
+                //ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
                 ScriptContext context = engine.getContext();
                 StringWriter writer = new StringWriter();
                 context.setWriter(writer);
