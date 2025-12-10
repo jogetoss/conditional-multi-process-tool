@@ -1,5 +1,13 @@
 # Description
 
+⚠️ DEPRECATED ⚠️
+
+This repository is no longer maintained.
+
+➡️ Please use the new repository: <br>
+https://github.com/jogetoss/conditional-process-tool
+<br><br>
+
 ![diagram](https://user-images.githubusercontent.com/70784722/179912265-c328e997-b5c9-42ec-ae36-85bf3d5e957d.png)
 
 This process tool wrapper plugin executes process tool based on condition.
